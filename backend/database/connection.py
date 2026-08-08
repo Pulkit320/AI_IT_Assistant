@@ -3,6 +3,7 @@ Database Connection & Engine Factory.
 Provides asynchronous engine creation for SQLite / PostgreSQL.
 """
 
+import uuid
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from backend.config import settings
 
@@ -14,6 +15,7 @@ if "postgresql" in db_url:
     connect_args = {
         "statement_cache_size": 0,
         "prepared_statement_cache_size": 0,
+        "prepared_statement_name_func": lambda: f"__asyncpg_{uuid.uuid4().hex}__",
     }
 
 # Create Async Engine
@@ -23,6 +25,7 @@ engine = create_async_engine(
     future=True,
     connect_args=connect_args,
 )
+
 
 
 
