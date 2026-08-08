@@ -45,6 +45,7 @@ This guide covers deploying the **AI Voice IT Helpdesk Agent** to production clo
 
 ---
 
+postgresql+asyncpg://postgres:[bJLr0&u20c@Pulkit]@db.gvlouhdsekerwehnlfin.supabase.co:5432/postgres
 ## Part 2: Deploy Backend to Render (Free)
 
 1. Push your repository to GitHub.
