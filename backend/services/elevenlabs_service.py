@@ -82,9 +82,14 @@ class ElevenLabsService:
         db: AsyncSession, raw_payload: Dict[str, Any]
     ) -> Tuple[str, str, str, Dict[str, Any]]:
         """Dispatches voice tool call to GPTService and returns formatted speech string."""
-        tool_name, parameters = ElevenLabsService.infer_tool_name_and_params(raw_payload)
-        logger.info(f"ElevenLabs Voice Webhook Request parsed as tool: '{tool_name}' with params: {parameters}")
-        
-        success, result, voice_msg = await GPTService.execute_tool_call(db, tool_name, parameters)
-        status_str = "success" if success else "error"
-        return status_str, tool_name, voice_msg, result
+        try:
+            tool_name, parameters = ElevenLabsService.infer_tool_name_and_params(raw_payload)
+            logger.info(f"ElevenLabs Voice Webhook Request parsed as tool: '{tool_name}' with params: {parameters}")
+            
+            success, result, voice_msg = await GPTService.execute_tool_call(db, tool_name, parameters)
+            status_str = "success" if success else "error"
+            return status_str, tool_name, voice_msg, result
+        except Exception as e:
+            logger.error(f"Error processing voice webhook: {e}")
+            return "error", "unknown", f"System processed tool request with status notice.", {"error": str(e)}
+
