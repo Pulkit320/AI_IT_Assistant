@@ -1,0 +1,67 @@
+erDiagram
+    USERS ||--o{ TICKETS : "creates"
+    USERS ||--o{ PASSWORD_RESET_LOGS : "requests"
+    USERS ||--o{ SOFTWARE_REQUESTS : "requests"
+    USERS ||--o{ ESCALATION_LOGS : "involved_in"
+    TICKETS ||--o| ESCALATION_LOGS : "escalates_to"
+
+    USERS {
+        int id PK
+        string employee_id UK
+        string full_name
+        string email UK
+        string password_hash
+        string department
+        string role
+        string security_answer
+        boolean is_active
+        datetime created_at
+        datetime updated_at
+    }
+
+    TICKETS {
+        int id PK
+        string ticket_number UK
+        string employee_id FK
+        string category
+        string priority
+        string status
+        string subject
+        string description
+        string voice_summary
+        datetime created_at
+        datetime updated_at
+    }
+
+    PASSWORD_RESET_LOGS {
+        int id PK
+        string employee_id FK
+        string reset_token
+        string status
+        string reset_ip
+        datetime requested_at
+        datetime completed_at
+    }
+
+    SOFTWARE_REQUESTS {
+        int id PK
+        string employee_id FK
+        string software_name
+        string justification
+        string approval_status
+        string approved_by
+        datetime created_at
+        datetime updated_at
+    }
+
+    ESCALATION_LOGS {
+        int id PK
+        int ticket_id FK
+        string employee_id FK
+        string reason
+        string priority
+        float sentiment_score
+        string agent_notes
+        datetime created_at
+        datetime updated_at
+    }

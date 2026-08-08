@@ -1,0 +1,47 @@
+{
+  "states": {
+    "GREETING": {
+      "prompt": "Thank you for calling the Corporate IT Helpdesk. My name is Alex. Could I please have your Employee ID?",
+      "next_state": "VERIFY_EMPLOYEE"
+    },
+    "VERIFY_EMPLOYEE": {
+      "prompt": "Thank you. For verification, could you confirm your security answer or department?",
+      "next_state": "INTENT_SELECTION"
+    },
+    "INTENT_SELECTION": {
+      "prompt": "Thank you. How can I assist you with IT support today?",
+      "branches": {
+        "password_reset": "PASSWORD_RESET_FLOW",
+        "software_request": "SOFTWARE_REQUEST_FLOW",
+        "check_ticket": "TICKET_CHECK_FLOW",
+        "create_ticket": "TICKET_CREATE_FLOW",
+        "escalate": "HUMAN_ESCALATION_FLOW"
+      }
+    },
+    "PASSWORD_RESET_FLOW": {
+      "tool": "password_reset",
+      "success_message": "A password reset link has been dispatched to your corporate email.",
+      "next_state": "CLOSING"
+    },
+    "SOFTWARE_REQUEST_FLOW": {
+      "tool": "request_access",
+      "success_message": "Your software entitlement request has been processed.",
+      "next_state": "CLOSING"
+    },
+    "TICKET_CHECK_FLOW": {
+      "tool": "check_ticket",
+      "next_state": "CLOSING"
+    },
+    "TICKET_CREATE_FLOW": {
+      "tool": "create_ticket",
+      "next_state": "CLOSING"
+    },
+    "HUMAN_ESCALATION_FLOW": {
+      "tool": "escalate_issue",
+      "next_state": "TRANSFER"
+    },
+    "CLOSING": {
+      "prompt": "Is there anything else I can help you with today? Thank you for calling IT Helpdesk!"
+    }
+  }
+}

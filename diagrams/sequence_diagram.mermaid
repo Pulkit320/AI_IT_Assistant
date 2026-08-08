@@ -1,0 +1,22 @@
+sequenceDiagram
+    autonumber
+    actor Caller as Employee (Voice)
+    participant Eleven as ElevenLabs Playbook Agent
+    participant Webhook as FastAPI Webhook (/elevenlabs/webhook)
+    participant GPT as GPTService (Tool Dispatcher)
+    participant Service as Domain Service (Ticket/Auth/Software)
+    participant DB as PostgreSQL / SQLite Database
+
+    Caller->>Eleven: Speaks "I need Docker Desktop for microservices development"
+    Eleven->>Eleven: Converts Speech-to-Text & Selects tool `request_access`
+    Eleven->>Webhook: POST /api/v1/elevenlabs/webhook (X-ElevenLabs-Secret)
+    Webhook->>Webhook: Verify Webhook Secret Token
+    Webhook->>GPT: execute_tool_call("request_access", parameters)
+    GPT->>Service: SoftwareService.request_software_access()
+    Service->>DB: Query User & Evaluate Rule Engine ("Docker" -> "Pending Approval")
+    Service->>DB: INSERT into software_requests table
+    DB-->>Service: Record Saved
+    Service-->>GPT: Return Success & Speech Text
+    GPT-->>Webhook: Return Tool Result
+    Webhook-->>Eleven: Return HTTP 200 JSON {"status": "success", "response": "..."}
+    Eleven->>Caller: Text-to-Speech: "Your request for Docker Desktop has been logged..."

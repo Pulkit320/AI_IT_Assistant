@@ -1,0 +1,46 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv/
+
+# Environment Variables & Secrets
+.env
+.env.local
+
+# Binaries & Executables
+cloudflared
+
+# Databases & Local Logs
+*.db
+*.sqlite
+*.sqlite3
+*.log
+*.out
+logs/
+localtunnel_url.txt
+lt_temp.log
+serveo_temp.log
+serveo_url.log
+tunnel_temp.log
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Antigravity & OS metadata
+.DS_Store
+Thumbs.db

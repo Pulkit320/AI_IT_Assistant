@@ -1,0 +1,66 @@
+[
+  {
+    "name": "create_ticket",
+    "description": "Creates an IT support ticket for an employee.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "employee_id": {"type": "string", "description": "Employee ID (e.g. EMP-1001)"},
+        "subject": {"type": "string", "description": "Short title of the IT problem"},
+        "description": {"type": "string", "description": "Detailed description of the issue"},
+        "category": {"type": "string", "description": "Category: Software, Hardware, Network, General IT", "default": "General IT"},
+        "priority": {"type": "string", "description": "Priority: Low, Medium, High, Urgent", "default": "Medium"}
+      },
+      "required": ["employee_id", "subject", "description"]
+    }
+  },
+  {
+    "name": "password_reset",
+    "description": "Requests an identity-verified password reset for an employee.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "employee_id": {"type": "string", "description": "Employee ID"},
+        "security_answer": {"type": "string", "description": "Answer to security question"}
+      },
+      "required": ["employee_id"]
+    }
+  },
+  {
+    "name": "request_access",
+    "description": "Requests software license access or tool entitlement.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "employee_id": {"type": "string", "description": "Employee ID"},
+        "software_name": {"type": "string", "description": "Name of software (e.g. VS Code, Docker, Slack, GitHub, Jira)"},
+        "justification": {"type": "string", "description": "Business justification for access"}
+      },
+      "required": ["employee_id", "software_name"]
+    }
+  },
+  {
+    "name": "check_ticket",
+    "description": "Looks up IT ticket status by ticket number.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "ticket_number": {"type": "string", "description": "IT Ticket number (e.g. IT-8091)"}
+      },
+      "required": ["ticket_number"]
+    }
+  },
+  {
+    "name": "escalate_issue",
+    "description": "Escalates an issue to a Tier-2 human support agent.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "employee_id": {"type": "string", "description": "Employee ID"},
+        "reason": {"type": "string", "description": "Reason for human escalation"},
+        "ticket_id": {"type": "integer", "description": "Associated ticket ID if available"}
+      },
+      "required": ["employee_id", "reason"]
+    }
+  }
+]

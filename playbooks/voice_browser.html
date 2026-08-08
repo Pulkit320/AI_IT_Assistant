@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Voice IT Helpdesk Agent - Microphone Tester</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .card {
+            background: #1e293b;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            max-width: 650px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid #334155;
+        }
+        h1 { color: #38bdf8; margin-bottom: 8px; }
+        p { color: #94a3b8; font-size: 15px; margin-bottom: 30px; }
+        .btn-mic {
+            background: linear-gradient(135deg, #0284c7, #2563eb);
+            color: white;
+            border: none;
+            padding: 18px 36px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-mic:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.6);
+        }
+        .btn-mic.listening {
+            background: linear-gradient(135deg, #dc2626, #ef4444);
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+        .status-box {
+            margin-top: 25px;
+            padding: 15px;
+            background: #0f172a;
+            border-radius: 8px;
+            font-size: 16px;
+            color: #cbd5e1;
+            border: 1px solid #334155;
+        }
+        .response-box {
+            margin-top: 20px;
+            padding: 20px;
+            background: #0284c715;
+            border-left: 4px solid #38bdf8;
+            border-radius: 6px;
+            text-align: left;
+            font-size: 17px;
+            color: #e2e8f0;
+            display: none;
+        }
+        .label { font-size: 12px; color: #38bdf8; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>AI Voice IT Helpdesk Agent</h1>
+    <p>Speak live voice commands into your computer microphone</p>
+
+    <button id="micBtn" class="btn-mic" onclick="toggleListening()">
+        <span id="micIcon">🎤</span> <span id="btnText">Click to Speak Voice Command</span>
+    </button>
+
+    <div class="status-box" id="statusBox">Ready. Click microphone and speak your request.</div>
+
+    <div class="response-box" id="responseBox">
+        <div class="label">FastAPI Agent Voice Reply</div>
+        <div id="replyText"></div>
+    </div>
+</div>
+
+<script>
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    let recognition;
+    let isListening = false;
+
+    if (!SpeechRecognition) {
+        document.getElementById('statusBox').innerText = "Web Speech API is not supported in this browser. Please open in Google Chrome or Microsoft Edge.";
+    } else {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-US';
+        recognition.interimResults = false;
+
+        recognition.onstart = () => {
+            isListening = true;
+            document.getElementById('micBtn').classList.add('listening');
+            document.getElementById('btnText').innerText = "Listening... Speak Now!";
+            document.getElementById('statusBox').innerText = "🎙️ Listening to your voice...";
+        };
+
+        recognition.onend = () => {
+            isListening = false;
+            document.getElementById('micBtn').classList.remove('listening');
+            document.getElementById('btnText').innerText = "Click to Speak Voice Command";
+        };
+
+        recognition.onresult = async (event) => {
+            const transcript = event.results[0][0].transcript;
+            document.getElementById('statusBox').innerText = `You said: "${transcript}"`;
+            
+            // Voice intent routing
+            let tool_name = "create_ticket";
+            let parameters = { employee_id: "EMP-1001", subject: transcript, description: "Caller reported via microphone: " + transcript };
+
+            const textLower = transcript.toLowerCase();
+            if (textLower.includes("password") || textLower.includes("reset") || textLower.includes("lock")) {
+                tool_name = "password_reset";
+                parameters = { employee_id: "EMP-1001", security_answer: "Austin" };
+            } else if (textLower.includes("software") || textLower.includes("code") || textLower.includes("slack") || textLower.includes("docker")) {
+                let sw = "VS Code";
+                if (textLower.includes("docker")) sw = "Docker Desktop";
+                if (textLower.includes("slack")) sw = "Slack";
+                tool_name = "request_access";
+                parameters = { employee_id: "EMP-1001", software_name: sw };
+            } else if (textLower.includes("status") || textLower.includes("ticket") || textLower.includes("8091")) {
+                tool_name = "check_ticket";
+                parameters = { ticket_number: "IT-8091" };
+            } else if (textLower.includes("human") || textLower.includes("agent") || textLower.includes("manager") || textLower.includes("escalate")) {
+                tool_name = "escalate_issue";
+                parameters = { employee_id: "EMP-1001", reason: transcript };
+            }
+
+            try {
+                const res = await fetch('http://127.0.0.1:8000/api/v1/elevenlabs/webhook', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-ElevenLabs-Secret': 'sample-webhook-secret-key'
+                    },
+                    body: JSON.stringify({ tool_name, parameters })
+                });
+
+                const data = await res.json();
+                const reply = data.response;
+                
+                document.getElementById('responseBox').style.display = 'block';
+                document.getElementById('replyText').innerText = `"${reply}"`;
+
+                // Speak response using browser text-to-speech
+                const utterance = new SpeechSynthesisUtterance(reply);
+                window.speechSynthesis.speak(utterance);
+            } catch (err) {
+                document.getElementById('statusBox').innerText = "Error connecting to http://127.0.0.1:8000. Is FastAPI server running?";
+            }
+        };
+    }
+
+    function toggleListening() {
+        if (!recognition) return;
+        if (isListening) {
+            recognition.stop();
+        } else {
+            recognition.start();
+        }
+    }
+</script>
+</body>
+</html>

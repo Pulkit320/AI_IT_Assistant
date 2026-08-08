@@ -1,0 +1,26 @@
+graph TD
+    Start([Employee Call Connected]) --> Greeting[Alex: Greetings & Ask for Employee ID]
+    Greeting --> VerifyEmployee{Is Employee Verified?}
+    
+    VerifyEmployee -- No --> AskSecurity[Ask Security Answer / Dept]
+    AskSecurity --> CheckSec{Correct Answer?}
+    CheckSec -- No --> Deny[Deny Access & Escalate]
+    CheckSec -- Yes --> IntentSelect[Determine Caller Intent]
+    VerifyEmployee -- Yes --> IntentSelect
+    
+    IntentSelect --> IntentType{Caller Goal}
+    
+    IntentType -- Password Reset --> ToolPR[Tool: password_reset]
+    IntentType -- Software Request --> ToolSW[Tool: request_access]
+    IntentType -- Ticket Status --> ToolTK[Tool: check_ticket]
+    IntentType -- New Issue --> ToolCT[Tool: create_ticket]
+    IntentType -- Upset / Human Req --> ToolESC[Tool: escalate_issue]
+    
+    ToolPR --> VoiceResp[Synthesize Voice Audio Response]
+    ToolSW --> VoiceResp
+    ToolTK --> VoiceResp
+    ToolCT --> VoiceResp
+    ToolESC --> Handoff[Transfer to Tier-2 Support Specialist]
+    
+    VoiceResp --> Closing[Alex: Closing & Thank You]
+    Closing --> End([Call Terminated])

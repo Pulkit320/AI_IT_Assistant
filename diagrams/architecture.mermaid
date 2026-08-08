@@ -1,0 +1,55 @@
+graph TB
+    subgraph Client ["Client & Voice Channel"]
+        Caller["Caller / Employee Phone Audio"]
+        CLI["Terminal CLI Voice Simulator (Zero-Cost)"]
+    end
+
+    subgraph ElevenLabs ["ElevenLabs Conversational AI"]
+        Playbook["Playbook Agent Orchestrator"]
+        STT["Speech-to-Text (STT)"]
+        TTS["Text-to-Speech (TTS)"]
+    end
+
+    subgraph FastAPI ["FastAPI Application Backend (Python)"]
+        Router["API Router Aggregator (/api/v1)"]
+        AuthMid["JWT Auth & Security"]
+        LogMid["Correlation ID & Timing Middleware"]
+        ExHandler["RFC 7807 Global Exception Handler"]
+
+        subgraph Controllers ["Endpoint Controllers"]
+            AuthEP["/auth"]
+            TicketEP["/tickets"]
+            PasswordEP["/password-reset"]
+            SoftwareEP["/software-access"]
+            GPTEP["/gpt/execute-tool"]
+            VoiceEP["/elevenlabs/webhook"]
+            EscalateEP["/escalation/escalate"]
+        end
+
+        subgraph Services ["Business Logic Services"]
+            AuthSvc["AuthService"]
+            TicketSvc["TicketService"]
+            PasswordSvc["PasswordResetService"]
+            SoftwareSvc["SoftwareService (Rule Engine)"]
+            GPTSvc["GPTService (Tool Dispatcher)"]
+            ElevenSvc["ElevenLabsService"]
+            EscalateSvc["EscalationService (Sentiment Engine)"]
+        end
+    end
+
+    subgraph Database ["Relational Database Layer"]
+        DB[("PostgreSQL / Supabase (or Local SQLite)")]
+        UsersT["Users Table"]
+        TicketsT["Tickets Table"]
+        PasswordLogT["PasswordResetLogs Table"]
+        SoftwareReqT["SoftwareRequests Table"]
+        EscalationLogT["EscalationLogs Table"]
+    end
+
+    Caller --> STT --> Playbook --> VoiceEP
+    CLI --> VoiceEP
+    VoiceEP --> ElevenSvc --> GPTSvc
+    GPTSvc --> TicketSvc & PasswordSvc & SoftwareSvc & EscalateSvc
+    TicketSvc & PasswordSvc & SoftwareSvc & EscalateSvc --> DB
+    DB --> UsersT & TicketsT & PasswordLogT & SoftwareReqT & EscalationLogT
+    ElevenSvc --> TTS --> Caller

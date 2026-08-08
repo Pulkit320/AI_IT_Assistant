@@ -1,0 +1,42 @@
+{
+  "agent_name": "AI Voice IT Helpdesk Agent",
+  "version": "1.0",
+  "voice_setting": {
+    "voice_id": "21m00Tcm4TlvDq8ikWAM",
+    "model_id": "eleven_turbo_v2",
+    "stability": 0.5,
+    "similarity_boost": 0.75
+  },
+  "webhook_configuration": {
+    "url": "http://localhost:8000/api/v1/elevenlabs/webhook",
+    "secret_header": "X-ElevenLabs-Secret",
+    "secret_value": "sample-webhook-secret-key"
+  },
+  "tools": [
+    {
+      "name": "create_ticket",
+      "description": "Log a new IT ticket for an employee.",
+      "parameters": ["employee_id", "subject", "description"]
+    },
+    {
+      "name": "password_reset",
+      "description": "Trigger an identity-verified password reset.",
+      "parameters": ["employee_id", "security_answer"]
+    },
+    {
+      "name": "request_access",
+      "description": "Request software tool entitlement.",
+      "parameters": ["employee_id", "software_name"]
+    },
+    {
+      "name": "check_ticket",
+      "description": "Look up ticket status by ticket number.",
+      "parameters": ["ticket_number"]
+    },
+    {
+      "name": "escalate_issue",
+      "description": "Escalate to a Tier-2 human agent.",
+      "parameters": ["employee_id", "reason"]
+    }
+  ]
+}
